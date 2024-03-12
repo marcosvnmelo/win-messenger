@@ -1,18 +1,16 @@
-export type TWindowMessager = {
-    events: Record<
-        string,
-        {
-            request: any;
-            response: any;
-        }
-    >;
+type WindowMessagerEvents = {
+    [key: string]: {
+        request: any;
+        response: any;
+    };
 };
 
 type Callback<T = any> = (payload: T) => void | Promise<void>;
 
 export class WindowMessager<
-    WM extends TWindowMessager,
-    TSide extends 'parent' | 'child',
+    TParentEvents extends WindowMessagerEvents,
+    TChildEvents extends WindowMessagerEvents,
+    TWindowType extends 'parent' | 'child',
 > {
     #listeners = new Map<string, Callback[]>();
 
@@ -21,6 +19,7 @@ export class WindowMessager<
             location: string;
             channelKey?: string;
             payloadKey?: string;
+            timeout?: number;
         },
     ) {
         this._registerListener();
@@ -38,49 +37,80 @@ export class WindowMessager<
         return this.options.payloadKey ?? 'payload';
     }
 
-    on<T extends keyof WM['events']>(
-        event: TSide extends 'parent'
-            ? T extends string
+    private get timeout(): number {
+        return this.options.timeout ?? 1000;
+    }
+
+    listenTo<T extends keyof TParentEvents | keyof TChildEvents>(
+        event: T extends string
+            ? TWindowType extends 'parent'
+                ? T extends keyof TParentEvents
+                    ? `on${T}`
+                    : T extends keyof TChildEvents
+                    ? `request${T}`
+                    : never
+                : T extends keyof TParentEvents
+                ? `request${T}`
+                : T extends keyof TChildEvents
                 ? `on${T}`
-                : 'onReady'
-            : T extends string
-            ? `request${T}`
-            : 'requestReady',
+                : never
+            : never,
         callback: Callback<
-            TSide extends 'parent'
-                ? WM['events'][T]['response']
-                : WM['events'][T]['request']
+            TWindowType extends 'parent'
+                ? T extends keyof TParentEvents
+                    ? TParentEvents[T]['response']
+                    : T extends keyof TChildEvents
+                    ? TChildEvents[T]['request']
+                    : never
+                : T extends keyof TParentEvents
+                ? TParentEvents[T]['request']
+                : T extends keyof TChildEvents
+                ? TChildEvents[T]['response']
+                : never
         >,
     ) {
-        if (!this.#listeners.has(event as string)) {
-            this.#listeners.set(event as string, []);
+        if (!this.#listeners.has(event)) {
+            this.#listeners.set(event, []);
         }
 
-        this.#listeners.get(event as string)?.push(callback);
+        this.#listeners.get(event)?.push(callback);
 
         return {
             unsubscribe: () => {
                 this.#listeners.set(
-                    event as string,
-                    this.#listeners
-                        .get(event as string)
-                        ?.filter(cb => cb !== callback) ?? [],
+                    event,
+                    this.#listeners.get(event)?.filter(cb => cb !== callback) ??
+                        [],
                 );
             },
         };
     }
 
-    call<T extends keyof WM['events']>(
-        event: TSide extends 'parent'
-            ? T extends string
+    call<T extends keyof TParentEvents | keyof TChildEvents>(
+        event: T extends string
+            ? TWindowType extends 'parent'
+                ? T extends keyof TParentEvents
+                    ? `request${T}`
+                    : T extends keyof TChildEvents
+                    ? `on${T}`
+                    : never
+                : T extends keyof TParentEvents
+                ? `on${T}`
+                : T extends keyof TChildEvents
                 ? `request${T}`
-                : 'requestReady'
-            : T extends string
-            ? `on${T}`
-            : 'onReady',
-        payload: TSide extends 'parent'
-            ? WM['events'][T]['request']
-            : WM['events'][T]['response'],
+                : never
+            : never,
+        payload: TWindowType extends 'parent'
+            ? T extends keyof TParentEvents
+                ? TParentEvents[T]['request']
+                : T extends keyof TChildEvents
+                ? TChildEvents[T]['response']
+                : never
+            : T extends keyof TParentEvents
+            ? TParentEvents[T]['response']
+            : T extends keyof TChildEvents
+            ? TChildEvents[T]['request']
+            : never,
     ) {
         window.postMessage(
             {
@@ -91,22 +121,42 @@ export class WindowMessager<
         );
     }
 
-    callSync<T extends keyof WM['events']>(
-        event: TSide extends 'parent'
-            ? T extends string
+    callSync<T extends keyof TParentEvents | keyof TChildEvents>(
+        event: T extends string
+            ? TWindowType extends 'parent'
+                ? T extends keyof TParentEvents
+                    ? `request${T}`
+                    : never
+                : T extends keyof TParentEvents
+                ? never
+                : T extends keyof TChildEvents
                 ? `request${T}`
-                : 'requestReady'
-            : T extends string
-            ? `on${T}`
-            : 'onReady',
-        payload: TSide extends 'parent'
-            ? WM['events'][T]['request']
-            : WM['events'][T]['response'],
-        timeout: number = 1000,
+                : never
+            : never,
+        payload: TWindowType extends 'parent'
+            ? T extends keyof TParentEvents
+                ? TParentEvents[T]['request']
+                : T extends keyof TChildEvents
+                ? TChildEvents[T]['response']
+                : never
+            : T extends keyof TParentEvents
+            ? TParentEvents[T]['response']
+            : T extends keyof TChildEvents
+            ? TChildEvents[T]['request']
+            : never,
+        timeout: number = this.timeout,
     ): Promise<
-        TSide extends 'parent'
-            ? WM['events'][T]['response']
-            : WM['events'][T]['request']
+        TWindowType extends 'parent'
+            ? T extends keyof TParentEvents
+                ? TParentEvents[T]['response']
+                : T extends keyof TChildEvents
+                ? TChildEvents[T]['request']
+                : never
+            : T extends keyof TParentEvents
+            ? TParentEvents[T]['request']
+            : T extends keyof TChildEvents
+            ? TChildEvents[T]['response']
+            : never
     > {
         window.postMessage(
             {
@@ -120,8 +170,8 @@ export class WindowMessager<
             new Promise((_, reject) =>
                 setTimeout(() => reject(new Error('Timeout')), timeout),
             ),
-            new Promise(resolve => {
-                this.on(this.#getReverseEvent(event) as any, resolve);
+            new Promise<any>(resolve => {
+                this.listenTo(this.#getReverseEvent(event) as any, resolve);
             }),
         ]);
     }
