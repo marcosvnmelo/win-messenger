@@ -86,6 +86,48 @@ export class WindowMessager<
         };
     }
 
+    listenToOnce<T extends keyof TParentEvents | keyof TChildEvents>(
+        event: T extends string
+            ? TWindowType extends 'parent'
+                ? T extends keyof TParentEvents
+                    ? `on${T}`
+                    : T extends keyof TChildEvents
+                    ? `request${T}`
+                    : never
+                : T extends keyof TParentEvents
+                ? `request${T}`
+                : T extends keyof TChildEvents
+                ? `on${T}`
+                : never
+            : never,
+        callback: Callback<
+            TWindowType extends 'parent'
+                ? T extends keyof TParentEvents
+                    ? TParentEvents[T]['response']
+                    : T extends keyof TChildEvents
+                    ? TChildEvents[T]['request']
+                    : never
+                : T extends keyof TParentEvents
+                ? TParentEvents[T]['request']
+                : T extends keyof TChildEvents
+                ? TChildEvents[T]['response']
+                : never
+        >,
+    ) {
+        if (!this.#listeners.has(event)) {
+            this.#listeners.set(event, []);
+        }
+
+        this.#listeners.get(event)?.push(payload => {
+            callback(payload);
+
+            this.#listeners.set(
+                event,
+                this.#listeners.get(event)?.filter(cb => cb !== callback) ?? [],
+            );
+        });
+    }
+
     call<T extends keyof TParentEvents | keyof TChildEvents>(
         event: T extends string
             ? TWindowType extends 'parent'
