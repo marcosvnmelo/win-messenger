@@ -213,7 +213,7 @@ export class WindowMessager<
                 setTimeout(() => reject(new Error('Timeout')), timeout),
             ),
             new Promise<any>(resolve => {
-                this.listenTo(this.#getReverseEvent(event) as any, resolve);
+                this.listenToOnce(this.#getReverseEvent(event) as any, resolve);
             }),
         ]);
     }
