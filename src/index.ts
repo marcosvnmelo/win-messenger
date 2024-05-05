@@ -47,26 +47,26 @@ export class WindowMessager<
                 ? T extends keyof TParentEvents
                     ? `on${T}`
                     : T extends keyof TChildEvents
-                    ? `request${T}`
-                    : never
+                      ? `request${T}`
+                      : never
                 : T extends keyof TParentEvents
-                ? `request${T}`
-                : T extends keyof TChildEvents
-                ? `on${T}`
-                : never
+                  ? `request${T}`
+                  : T extends keyof TChildEvents
+                    ? `on${T}`
+                    : never
             : never,
         callback: Callback<
             TWindowType extends 'parent'
                 ? T extends keyof TParentEvents
                     ? TParentEvents[T]['response']
                     : T extends keyof TChildEvents
-                    ? TChildEvents[T]['request']
-                    : never
+                      ? TChildEvents[T]['request']
+                      : never
                 : T extends keyof TParentEvents
-                ? TParentEvents[T]['request']
-                : T extends keyof TChildEvents
-                ? TChildEvents[T]['response']
-                : never
+                  ? TParentEvents[T]['request']
+                  : T extends keyof TChildEvents
+                    ? TChildEvents[T]['response']
+                    : never
         >,
     ) {
         if (!this.#listeners.has(event)) {
@@ -92,26 +92,26 @@ export class WindowMessager<
                 ? T extends keyof TParentEvents
                     ? `on${T}`
                     : T extends keyof TChildEvents
-                    ? `request${T}`
-                    : never
+                      ? `request${T}`
+                      : never
                 : T extends keyof TParentEvents
-                ? `request${T}`
-                : T extends keyof TChildEvents
-                ? `on${T}`
-                : never
+                  ? `request${T}`
+                  : T extends keyof TChildEvents
+                    ? `on${T}`
+                    : never
             : never,
         callback: Callback<
             TWindowType extends 'parent'
                 ? T extends keyof TParentEvents
                     ? TParentEvents[T]['response']
                     : T extends keyof TChildEvents
-                    ? TChildEvents[T]['request']
-                    : never
+                      ? TChildEvents[T]['request']
+                      : never
                 : T extends keyof TParentEvents
-                ? TParentEvents[T]['request']
-                : T extends keyof TChildEvents
-                ? TChildEvents[T]['response']
-                : never
+                  ? TParentEvents[T]['request']
+                  : T extends keyof TChildEvents
+                    ? TChildEvents[T]['response']
+                    : never
         >,
     ) {
         if (!this.#listeners.has(event)) {
@@ -134,25 +134,25 @@ export class WindowMessager<
                 ? T extends keyof TParentEvents
                     ? `request${T}`
                     : T extends keyof TChildEvents
-                    ? `on${T}`
-                    : never
+                      ? `on${T}`
+                      : never
                 : T extends keyof TParentEvents
-                ? `on${T}`
-                : T extends keyof TChildEvents
-                ? `request${T}`
-                : never
+                  ? `on${T}`
+                  : T extends keyof TChildEvents
+                    ? `request${T}`
+                    : never
             : never,
         payload: TWindowType extends 'parent'
             ? T extends keyof TParentEvents
                 ? TParentEvents[T]['request']
                 : T extends keyof TChildEvents
-                ? TChildEvents[T]['response']
-                : never
+                  ? TChildEvents[T]['response']
+                  : never
             : T extends keyof TParentEvents
-            ? TParentEvents[T]['response']
-            : T extends keyof TChildEvents
-            ? TChildEvents[T]['request']
-            : never,
+              ? TParentEvents[T]['response']
+              : T extends keyof TChildEvents
+                ? TChildEvents[T]['request']
+                : never,
     ) {
         window.postMessage(
             {
@@ -170,35 +170,35 @@ export class WindowMessager<
                     ? `request${T}`
                     : never
                 : T extends keyof TParentEvents
-                ? never
-                : T extends keyof TChildEvents
-                ? `request${T}`
-                : never
+                  ? never
+                  : T extends keyof TChildEvents
+                    ? `request${T}`
+                    : never
             : never,
         payload: TWindowType extends 'parent'
             ? T extends keyof TParentEvents
                 ? TParentEvents[T]['request']
                 : T extends keyof TChildEvents
-                ? TChildEvents[T]['response']
-                : never
+                  ? TChildEvents[T]['response']
+                  : never
             : T extends keyof TParentEvents
-            ? TParentEvents[T]['response']
-            : T extends keyof TChildEvents
-            ? TChildEvents[T]['request']
-            : never,
+              ? TParentEvents[T]['response']
+              : T extends keyof TChildEvents
+                ? TChildEvents[T]['request']
+                : never,
         timeout: number = this.timeout,
     ): Promise<
         TWindowType extends 'parent'
             ? T extends keyof TParentEvents
                 ? TParentEvents[T]['response']
                 : T extends keyof TChildEvents
-                ? TChildEvents[T]['request']
-                : never
+                  ? TChildEvents[T]['request']
+                  : never
             : T extends keyof TParentEvents
-            ? TParentEvents[T]['request']
-            : T extends keyof TChildEvents
-            ? TChildEvents[T]['response']
-            : never
+              ? TParentEvents[T]['request']
+              : T extends keyof TChildEvents
+                ? TChildEvents[T]['response']
+                : never
     > {
         window.postMessage(
             {
