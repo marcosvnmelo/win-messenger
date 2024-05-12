@@ -1,12 +1,12 @@
 {
     "name": "winpm",
-    "version": "1.0.0",
-    "description": "Increment window message",
+    "version": "0.1.0",
+    "description": "A typed wrapper to window postmessage",
     "main": "./dist/index.js",
     "module": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "files": [
-        "dist"
+        "dist/**"
     ],
     "type": "module",
     "scripts": {
