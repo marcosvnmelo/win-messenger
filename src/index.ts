@@ -250,10 +250,10 @@ export class WindowMessager<
     }
 
     _registerListener() {
-        window.addEventListener('message', this.#listener);
+        window.addEventListener('message', event => this.#listener(event));
     }
 
     _unregisterListener() {
-        window.removeEventListener('message', this.#listener);
+        window.removeEventListener('message', event => this.#listener(event));
     }
 }
