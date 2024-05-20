@@ -12,33 +12,24 @@ export class WindowMessager<
     TChildEvents extends WindowMessagerEvents,
     TWindowType extends 'parent' | 'child',
 > {
-    #listeners = new Map<string, Callback[]>();
+    private windowLocation: string;
+    private window: Window;
+    private channelKey: string;
+    private payloadKey: string;
+    private timeout: number;
 
-    constructor(
-        private options: {
-            location: string;
-            channelKey?: string;
-            payloadKey?: string;
-            timeout?: number;
-        },
-    ) {
-        this._registerListener();
-    }
-
-    private get windowLocation(): string {
-        return this.options.location ?? '*';
-    }
-
-    private get channelKey(): string {
-        return this.options.channelKey ?? 'channel';
-    }
-
-    private get payloadKey(): string {
-        return this.options.payloadKey ?? 'payload';
-    }
-
-    private get timeout(): number {
-        return this.options.timeout ?? 1000;
+    constructor(options: {
+        location: string;
+        window: Window;
+        channelKey?: string;
+        payloadKey?: string;
+        timeout?: number;
+    }) {
+        this.windowLocation = options.location || '*';
+        this.window = options.window || window;
+        this.channelKey = options.channelKey || 'channel';
+        this.payloadKey = options.payloadKey || 'payload';
+        this.timeout = options.timeout ?? 1000;
     }
 
     listenTo<T extends keyof TParentEvents | keyof TChildEvents>(
@@ -69,19 +60,14 @@ export class WindowMessager<
                     : never
         >,
     ) {
-        if (!this.#listeners.has(event)) {
-            this.#listeners.set(event, []);
-        }
+        const listener = (me: MessageEvent) =>
+            this.callbackInvoker(event, me, callback);
 
-        this.#listeners.get(event)?.push(callback);
+        this.window.addEventListener('message', listener);
 
         return {
             unsubscribe: () => {
-                this.#listeners.set(
-                    event,
-                    this.#listeners.get(event)?.filter(cb => cb !== callback) ??
-                        [],
-                );
+                this.window.removeEventListener('message', listener);
             },
         };
     }
@@ -114,18 +100,14 @@ export class WindowMessager<
                     : never
         >,
     ) {
-        if (!this.#listeners.has(event)) {
-            this.#listeners.set(event, []);
-        }
+        const listener = (me: MessageEvent) => {
+            if (me.data[this.channelKey] === event) {
+                this.callbackInvoker(event, me, callback);
+                this.window.removeEventListener('message', listener);
+            }
+        };
 
-        this.#listeners.get(event)?.push(payload => {
-            callback(payload);
-
-            this.#listeners.set(
-                event,
-                this.#listeners.get(event)?.filter(cb => cb !== callback) ?? [],
-            );
-        });
+        this.window.addEventListener('message', listener);
     }
 
     call<T extends keyof TParentEvents | keyof TChildEvents>(
@@ -154,7 +136,7 @@ export class WindowMessager<
                 ? TChildEvents[T]['request']
                 : never,
     ) {
-        window.postMessage(
+        this.window.postMessage(
             {
                 [this.channelKey]: event,
                 [this.payloadKey]: payload,
@@ -163,7 +145,7 @@ export class WindowMessager<
         );
     }
 
-    callSync<T extends keyof TParentEvents | keyof TChildEvents>(
+    callAsync<T extends keyof TParentEvents | keyof TChildEvents>(
         event: T extends string
             ? TWindowType extends 'parent'
                 ? T extends keyof TParentEvents
@@ -200,35 +182,48 @@ export class WindowMessager<
                 ? TChildEvents[T]['response']
                 : never
     > {
-        window.postMessage(
-            {
-                [this.channelKey]: event,
-                [this.payloadKey]: payload,
-            },
-            this.windowLocation,
-        );
+        let timeoutId: number | undefined;
 
         return Promise.race([
-            new Promise((_, reject) =>
-                setTimeout(() => reject(new Error('Timeout')), timeout),
-            ),
+            new Promise((_, reject) => {
+                timeoutId = setTimeout(
+                    () => reject(new Error('Timeout')),
+                    timeout,
+                );
+            }),
             new Promise<any>(resolve => {
-                this.listenToOnce(this.#getReverseEvent(event) as any, resolve);
+                this.window.postMessage(
+                    {
+                        [this.channelKey]: event,
+                        [this.payloadKey]: payload,
+                    },
+                    this.windowLocation,
+                );
+
+                clearTimeout(timeoutId);
+                this.listenToOnce(this.getReverseEvent(event) as any, resolve);
             }),
         ]);
     }
 
-    #listener(event: MessageEvent) {
-        if (event.origin !== this.windowLocation) return;
+    private callbackInvoker(
+        channel: string,
+        event: MessageEvent,
+        callback: Callback,
+    ) {
+        if (event.data[this.channelKey] !== channel) return;
 
-        if (!this.#listeners.has(event.data[this.channelKey])) return;
+        if (
+            this.windowLocation !== '*' &&
+            event.origin !== this.windowLocation
+        ) {
+            return;
+        }
 
-        this.#listeners
-            .get(event.data[this.channelKey])
-            ?.forEach(cb => cb(event.data[this.payloadKey]));
+        callback(event.data[this.payloadKey]);
     }
 
-    #getReverseEvent(event: string): string {
+    private getReverseEvent(event: string): string {
         const onRegex = /^on(.+)$/;
         const requestRegex = /^request(.+)$/;
 
@@ -236,24 +231,16 @@ export class WindowMessager<
             const group = onRegex.exec(event)?.[1];
             if (!group) throw Error('Invalid event');
 
-            return group;
+            return `request${group}`;
         }
 
         if (requestRegex.test(event)) {
             const group = requestRegex.exec(event)?.[1];
             if (!group) throw Error('Invalid event');
 
-            return group;
+            return `on${group}`;
         }
 
         throw Error('Invalid event');
-    }
-
-    _registerListener() {
-        window.addEventListener('message', event => this.#listener(event));
-    }
-
-    _unregisterListener() {
-        window.removeEventListener('message', event => this.#listener(event));
     }
 }
