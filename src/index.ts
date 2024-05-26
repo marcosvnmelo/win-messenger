@@ -38,10 +38,10 @@ export class WindowMessager<
                 ? T extends keyof TParentEvents
                     ? `on${T}`
                     : T extends keyof TChildEvents
-                      ? `request${T}`
+                      ? `send${T}`
                       : never
                 : T extends keyof TParentEvents
-                  ? `request${T}`
+                  ? `send${T}`
                   : T extends keyof TChildEvents
                     ? `on${T}`
                     : never
@@ -78,10 +78,10 @@ export class WindowMessager<
                 ? T extends keyof TParentEvents
                     ? `on${T}`
                     : T extends keyof TChildEvents
-                      ? `request${T}`
+                      ? `send${T}`
                       : never
                 : T extends keyof TParentEvents
-                  ? `request${T}`
+                  ? `send${T}`
                   : T extends keyof TChildEvents
                     ? `on${T}`
                     : never
@@ -114,14 +114,14 @@ export class WindowMessager<
         event: T extends string
             ? TWindowType extends 'parent'
                 ? T extends keyof TParentEvents
-                    ? `request${T}`
+                    ? `send${T}`
                     : T extends keyof TChildEvents
                       ? `on${T}`
                       : never
                 : T extends keyof TParentEvents
                   ? `on${T}`
                   : T extends keyof TChildEvents
-                    ? `request${T}`
+                    ? `send${T}`
                     : never
             : never,
         payload: TWindowType extends 'parent'
@@ -149,12 +149,12 @@ export class WindowMessager<
         event: T extends string
             ? TWindowType extends 'parent'
                 ? T extends keyof TParentEvents
-                    ? `request${T}`
+                    ? `send${T}`
                     : never
                 : T extends keyof TParentEvents
                   ? never
                   : T extends keyof TChildEvents
-                    ? `request${T}`
+                    ? `send${T}`
                     : never
             : never,
         payload: TWindowType extends 'parent'
@@ -225,17 +225,17 @@ export class WindowMessager<
 
     private getReverseEvent(event: string): string {
         const onRegex = /^on(.+)$/;
-        const requestRegex = /^request(.+)$/;
+        const sendRegex = /^send(.+)$/;
 
         if (onRegex.test(event)) {
             const group = onRegex.exec(event)?.[1];
             if (!group) throw Error('Invalid event');
 
-            return `request${group}`;
+            return `send${group}`;
         }
 
-        if (requestRegex.test(event)) {
-            const group = requestRegex.exec(event)?.[1];
+        if (sendRegex.test(event)) {
+            const group = sendRegex.exec(event)?.[1];
             if (!group) throw Error('Invalid event');
 
             return `on${group}`;
