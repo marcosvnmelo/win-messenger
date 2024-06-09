@@ -108,6 +108,12 @@ export class WindowMessager<
         };
 
         this.window.addEventListener('message', listener);
+
+        return {
+            unsubscribe: () => {
+                this.window.removeEventListener('message', listener);
+            },
+        };
     }
 
     call<T extends keyof TParentEvents | keyof TChildEvents>(
