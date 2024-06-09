@@ -1,4 +1,4 @@
-type WindowMessagerEvents = {
+type WinMessengerEvents = {
     [key: string]: {
         request: any;
         response: any;
@@ -7,9 +7,9 @@ type WindowMessagerEvents = {
 
 type Callback<T = any> = (payload: T) => void | Promise<void>;
 
-export class WindowMessager<
-    TParentEvents extends WindowMessagerEvents,
-    TChildEvents extends WindowMessagerEvents,
+export class WinMessenger<
+    TParentEvents extends WinMessengerEvents,
+    TChildEvents extends WinMessengerEvents,
     TWindowType extends 'parent' | 'child',
 > {
     private windowLocation: string;

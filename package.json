@@ -1,5 +1,5 @@
 {
-    "name": "winpm",
+    "name": "win-messenger",
     "version": "0.1.0",
     "description": "A typed wrapper to window postmessage",
     "main": "./dist/index.js",
@@ -15,10 +15,14 @@
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "keywords": [
+        "win-messenger",
+        "window-messenger",
         "window",
         "post",
         "postmessage",
-        "iframe"
+        "iframe",
+        "typed",
+        "window.postMessage"
     ],
     "author": "marcosvnmelo",
     "license": "MIT",
