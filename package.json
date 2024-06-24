@@ -1,6 +1,6 @@
 {
     "name": "win-messenger",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "A typed wrapper to window postmessage",
     "main": "./dist/index.js",
     "module": "./dist/index.js",
@@ -24,6 +24,10 @@
         "typed",
         "window.postMessage"
     ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/marcosvnmelo/win-messenger"
+    },
     "author": "marcosvnmelo",
     "license": "MIT",
     "devDependencies": {
