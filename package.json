@@ -1,6 +1,6 @@
 {
     "name": "win-messenger",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "description": "A typed wrapper to window postmessage",
     "main": "./dist/index.js",
     "module": "./dist/index.js",
@@ -31,13 +31,13 @@
     "author": "marcosvnmelo",
     "license": "MIT",
     "devDependencies": {
-        "eslint": "^9.4.0",
-        "eslint-config-prettier": "^9.1.0",
-        "eslint-plugin-prettier": "^5.1.3",
-        "prettier": "^3.3.1",
-        "tsup": "^8.1.0",
-        "tsx": "^4.15.1",
-        "typescript": "^5.4.5",
-        "typescript-eslint": "^7.12.0"
+        "eslint": "^9.30.1",
+        "eslint-config-prettier": "^10.1.5",
+        "eslint-plugin-prettier": "^5.5.1",
+        "prettier": "^3.6.2",
+        "tsup": "^8.5.0",
+        "tsx": "^4.20.3",
+        "typescript": "^5.8.3",
+        "typescript-eslint": "^8.35.1"
     }
 }
