@@ -1,17 +1,17 @@
-// @ts-check
+import js from '@eslint/js';
+import { defineConfig } from 'eslint/config';
+import ts from 'typescript-eslint';
 
-import eslint from '@eslint/js';
-import tseslint from 'typescript-eslint';
-import eslintPluginPrettier from 'eslint-plugin-prettier/recommended';
-
-export default tseslint.config({
-    ignores: ['node_modules/**', 'dist/**'],
-    extends: [
-        eslint.configs.recommended,
-        ...tseslint.configs.recommended,
-        eslintPluginPrettier,
-    ],
-    rules: {
-        '@typescript-eslint/no-explicit-any': 'off',
+export default defineConfig([
+    js.configs.recommended,
+    ts.configs.recommended,
+    { ignores: ['**/dist'] },
+    {
+        files: ['**/src/**/*.ts', '**/e2e/**/*.ts'],
+        rules: {
+            '@typescript-eslint/no-explicit-any': 'off',
+            '@typescript-eslint/consistent-type-imports': 'error',
+            '@typescript-eslint/consistent-type-definitions': 'error',
+        },
     },
-});
+]);

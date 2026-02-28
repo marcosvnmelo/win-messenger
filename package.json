@@ -2,7 +2,7 @@
     "name": "win-messenger",
     "version": "0.1.4",
     "description": "A typed wrapper to window postmessage",
-    "main": "./dist/index.js",
+    "main": "./dist/index.cjs",
     "module": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "files": [
@@ -10,9 +10,14 @@
     ],
     "type": "module",
     "scripts": {
-        "dev": "tsup --watch",
-        "build": "tsup",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "dev": "rslib build --watch",
+        "build": "rslib build",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "prepublishOnly": "pnpm run build",
+        "format": "prettier --write .",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix",
+        "release": "quick-publish"
     },
     "keywords": [
         "win-messenger",
@@ -31,14 +36,12 @@
     "author": "marcosvnmelo",
     "license": "MIT",
     "devDependencies": {
-        "eslint": "^9.39.1",
-        "eslint-config-prettier": "^10.1.8",
-        "eslint-plugin-prettier": "^5.5.4",
-        "glob": ">=10.5.0",
-        "prettier": "^3.7.3",
-        "tsup": "^8.5.1",
-        "tsx": "^4.21.0",
-        "typescript": "^5.9.3",
-        "typescript-eslint": "^8.48.1"
+        "@eslint/js": "10.0.1",
+        "@rslib/core": "0.19.6",
+        "eslint": "10.0.2",
+        "prettier": "3.8.1",
+        "quick-publish": "0.7.1",
+        "typescript": "5.9.3",
+        "typescript-eslint": "8.56.1"
     }
 }

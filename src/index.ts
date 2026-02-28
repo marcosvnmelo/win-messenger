@@ -1,9 +1,9 @@
-type WinMessengerEvents = {
+interface WinMessengerEvents {
     [key: string]: {
         request: any;
         response: any;
     };
-};
+}
 
 type Callback<T = any> = (payload: T) => void | Promise<void>;
 
