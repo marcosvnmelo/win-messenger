@@ -12,7 +12,8 @@
     "scripts": {
         "dev": "rslib build --watch",
         "build": "rslib build",
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "test": "rstest",
+        "test:watch": "rstest --watch",
         "prepublishOnly": "pnpm run build",
         "format": "prettier --write .",
         "lint": "eslint .",
@@ -38,7 +39,10 @@
     "devDependencies": {
         "@eslint/js": "10.0.1",
         "@rslib/core": "0.19.6",
+        "@rstest/core": "0.8.5",
+        "@rstest/adapter-rslib": "0.2.0",
         "eslint": "10.0.2",
+        "jsdom": "^28.1.0",
         "prettier": "3.8.1",
         "quick-publish": "0.7.1",
         "typescript": "5.9.3",
