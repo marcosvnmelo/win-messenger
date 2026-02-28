@@ -1,6 +1,6 @@
 {
     "name": "win-messenger",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "description": "A typed wrapper to window postmessage",
     "main": "./dist/index.cjs",
     "module": "./dist/index.js",
