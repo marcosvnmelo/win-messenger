@@ -6,6 +6,7 @@ settings:
 
 overrides:
   semver: '>=7.5.2'
+  undici: '>=7.24.0'
 
 importers:
 
@@ -1507,8 +1508,8 @@ packages:
     engines: {node: '>=0.8.0'}
     hasBin: true
 
-  undici@7.22.0:
-    resolution: {integrity: sha512-RqslV2Us5BrllB+JeiZnK4peryVTndy9Dnqq62S3yYRRTj0tFQCwEniUy2167skdGOy3vqRzEvl1Dm4sV2ReDg==}
+  undici@7.24.6:
+    resolution: {integrity: sha512-Xi4agocCbRzt0yYMZGMA6ApD7gvtUFaxm4ZmeacWI4cZxaF6C+8I8QfofC20NAePiB/IcvZmzkJ7XPa471AEtA==}
     engines: {node: '>=20.18.1'}
 
   uri-js@4.4.1:
@@ -2573,7 +2574,7 @@ snapshots:
       saxes: 6.0.0
       symbol-tree: 3.2.4
       tough-cookie: 6.0.0
-      undici: 7.22.0
+      undici: 7.24.6
       w3c-xmlserializer: 5.0.0
       webidl-conversions: 8.0.1
       whatwg-mimetype: 5.0.0
@@ -3052,7 +3053,7 @@ snapshots:
   uglify-js@3.19.3:
     optional: true
 
-  undici@7.22.0: {}
+  undici@7.24.6: {}
 
   uri-js@4.4.1:
     dependencies:
