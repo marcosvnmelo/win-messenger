@@ -1,3 +1,7 @@
+# [0.2.0](https://github.com/marcosvnmelo/win-messenger/compare/v0.1.6...v0.2.0) (2026-03-25)
+
+
+
 ## [0.1.6](https://github.com/marcosvnmelo/win-messenger/compare/v0.1.5...v0.1.6) (2026-03-25)
 
 
